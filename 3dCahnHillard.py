@@ -162,9 +162,11 @@ option_prefix = ksp.getOptionsPrefix()
 opts[f"{option_prefix}ksp_max_it"] = 30
 opts[f"{option_prefix}ksp_type"] = "gmres"
 opts[f"{option_prefix}pc_type"] = "ksp"
+opts[f"{option_prefix}pc_factor_mat_solver_type"] = "mumps"
 ksp.setFromOptions()
 
 startTime = datetime.now()
+now = startTime
 print("------------------------------------")
 print("Simulation Start")
 print("------------------------------------")
@@ -200,10 +202,14 @@ while t < Ttot:
 
         interp_and_save(t, vtk)
         if ii % 1 == 0 and domain.comm.rank == 0:
+            lastitter = now
             now = datetime.now()
+
             current_time = now.strftime("%H:%M:%S")
             print("Step: {} |   Increment: {} | Iterations: {}".format(step, ii, iter))
-            print("Simulation Time: {} s | dt: {} s".format(round(t, 2), round(dt, 3)))
+            print(
+                f"Simulation Time: {t:.2f} s | dt: {dt:.3f} s | Itter Time: {now-lastitter}"
+            )
             print()
 
         if iter <= 3:
